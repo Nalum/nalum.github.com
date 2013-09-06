@@ -25,8 +25,14 @@
         <div id="main_content_wrap" class="outer">
             <section id="main_content" class="inner">
                 <h2>Setting Python 2.7 as the Default for Amazon Linux AMI</h2>
-                <p></p>
-                <pre><code class="bash">
+                <p>
+                    So I've been looking at AWS Elastic Beanstalk and trying to get it up and running.
+                    I've found so far that I can do so simply enough, although the AWS Documentation seems to be out of date with their current CLI tools.
+                    <br>
+                    Using the <a href="http://aws.amazon.com/cli/">Python CLI Tool Kit</a> seems like it will be nice when it's easier to understand what is being done.
+                    With the current state of the Documentation
+                </p>
+                <pre>Bash<code class="bash">
 sudo su
 yum install python27
 cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
@@ -39,9 +45,7 @@ ln -s pydoc27 pydoc
 ln -s pydoc27 pydoc2
                 </code></pre>
                 <p>Update the python path for the easy_install command so it uses the python symlink we just set up:</p>
-                <pre><code class="diff python">
-Index: /usr/bin/easy_install
-===================================================================
+                <pre>Python<code class="diff">
 --- /usr/bin/easy_install
 +++ /usr/bin/easy_install
 @@ -1,1 +1,1 @@
@@ -51,7 +55,7 @@ Index: /usr/bin/easy_install
   __requires__ = 'distribute==0.6.10'
                 </code></pre>
                 <p></p>
-                <pre><code class="bash">
+                <pre>Bash<code class="bash">
 yum update
 yum install gcc python-devel
 easy_install pip
