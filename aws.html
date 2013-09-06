@@ -25,16 +25,16 @@
                 <h2>Setting Python 2.7 as the Default for Amazon Linux AMI</h2>
                 <p></p>
                 <pre><code>
-# sudo su
-# yum install python27
-# cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
-# cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
-# rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2
-# cd /usr/bin
-# ln -s python2.7 python
-# ln -s python2.7 python2
-# ln -s pydoc27 pydoc
-# ln -s pydoc27 pydoc2
+sudo su
+yum install python27
+cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
+cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
+rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2
+cd /usr/bin
+ln -s python2.7 python
+ln -s python2.7 python2
+ln -s pydoc27 pydoc
+ln -s pydoc27 pydoc2
                 </code></pre>
                 <p>Update the python path for the easy_install command <code># vim /usr/bin/easy_install</code> so it uses the python symlink we just set up:</p>
                 <pre><code>
@@ -52,9 +52,9 @@
                 </code></pre>
                 <p></p>
                 <pre><code>
-# yum update
-# yum install gcc python-devel
-# easy_install pip
+yum update
+yum install gcc python-devel
+easy_install pip
                 </code></pre>
             </section>
         </div>
