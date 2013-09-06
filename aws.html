@@ -27,36 +27,35 @@
                 <h2>Setting Python 2.7 as the Default for Amazon Linux AMI</h2>
                 <p></p>
                 <pre><code class="bash">
-# sudo su
-# yum install python27
-# cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
-# cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
-# rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2
-# cd /usr/bin
-# ln -s python2.7 python
-# ln -s python2.7 python2
-# ln -s pydoc27 pydoc
-# ln -s pydoc27 pydoc2
+sudo su
+yum install python27
+cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
+cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
+rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2
+cd /usr/bin
+ln -s python2.7 python
+ln -s python2.7 python2
+ln -s pydoc27 pydoc
+ln -s pydoc27 pydoc2
                 </code></pre>
-                <p>Update the python path for the easy_install command <pre><code class="bash"># vim /usr/bin/easy_install</code></pre> so it uses the python symlink we just set up:</p>
-                <pre><code class="python">
-- 1 #!/usr/bin/python2.6
-+ 1 #!/usr/bin/python
-  2 # EASY-INSTALL-ENTRY-SCRIPT: 'distribute==0.6.10','console_scripts','easy_install'
-  3 __requires__ = 'distribute==0.6.10'
-  4 import sys
-  5 from pkg_resources import load_entry_point
-  6
-  7 if __name__ == '__main__':
-  8     sys.exit(
-  9         load_entry_point('distribute==0.6.10', 'console_scripts', 'easy_install')()
- 10     )
+                <p>Update the python path for the easy_install command so it uses the python symlink we just set up:</p>
+                <pre><code class="diff python">
+- #!/usr/bin/python2.6
++ #!/usr/bin/python
+  # EASY-INSTALL-ENTRY-SCRIPT: 'distribute==0.6.10','console_scripts','easy_install'
+  __requires__ = 'distribute==0.6.10'
+  import sys
+  from pkg_resources import load_entry_point
+    7 if __name__ == '__main__':
+      sys.exit(
+          load_entry_point('distribute==0.6.10', 'console_scripts', 'easy_install')()
+      )
                 </code></pre>
                 <p></p>
                 <pre><code class="bash">
-# yum update
-# yum install gcc python-devel
-# easy_install pip
+yum update
+yum install gcc python-devel
+easy_install pip
                 </code></pre>
             </section>
         </div>
