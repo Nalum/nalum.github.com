@@ -33,9 +33,20 @@
 # ln -s pydoc27 pydoc
 # ln -s pydoc27 pydoc2
                 </pre>
-                <p>Update the path to the python command so it uses the pyhton symlink we just set up:</p>
+                <p>Update the python path for the easy_install command <code># vim /usr/bin/easy_install</code> so it uses the python symlink we just set up:</p>
                 <pre>
-# vim /usr/bin/easy_install
+- 1 #!/usr/bin/python2.6
++ 1 # EASY-INSTALL-ENTRY-SCRIPT: 'distribute==0.6.10','console_scripts','easy_install'
+  2 __requires__ = 'distribute==0.6.10'
+  3 import sys
+  4 from pkg_resources import load_entry_point
+  5
+  6 if __name__ == '__main__':
+  7     sys.exit(
+  8         load_entry_point('distribute==0.6.10', 'console_scripts', 'easy_install')()
+  9     )
+                </pre>
+                <pre>
 # yum update
 # yum install gcc python-devel
                 </pre>
