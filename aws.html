@@ -26,20 +26,20 @@
             <section id="main_content" class="inner">
                 <h2>Setting Python 2.7 as the Default for Amazon Linux AMI</h2>
                 <p></p>
-                <pre><code>
-sudo su
-yum install python27
-cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
-cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
-rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2
-cd /usr/bin
-ln -s python2.7 python
-ln -s python2.7 python2
-ln -s pydoc27 pydoc
-ln -s pydoc27 pydoc2
+                <pre><code class="bash">
+# sudo su
+# yum install python27
+# cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
+# cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
+# rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2
+# cd /usr/bin
+# ln -s python2.7 python
+# ln -s python2.7 python2
+# ln -s pydoc27 pydoc
+# ln -s pydoc27 pydoc2
                 </code></pre>
-                <p>Update the python path for the easy_install command <code># vim /usr/bin/easy_install</code> so it uses the python symlink we just set up:</p>
-                <pre><code>
+                <p>Update the python path for the easy_install command <pre><code class="bash"># vim /usr/bin/easy_install</code></pre> so it uses the python symlink we just set up:</p>
+                <pre><code class="python">
 - 1 #!/usr/bin/python2.6
 + 1 #!/usr/bin/python
   2 # EASY-INSTALL-ENTRY-SCRIPT: 'distribute==0.6.10','console_scripts','easy_install'
@@ -53,10 +53,10 @@ ln -s pydoc27 pydoc2
  10     )
                 </code></pre>
                 <p></p>
-                <pre><code>
-yum update
-yum install gcc python-devel
-easy_install pip
+                <pre><code class="bash">
+# yum update
+# yum install gcc python-devel
+# easy_install pip
                 </code></pre>
             </section>
         </div>
