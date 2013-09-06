@@ -40,16 +40,15 @@ ln -s pydoc27 pydoc2
                 </code></pre>
                 <p>Update the python path for the easy_install command so it uses the python symlink we just set up:</p>
                 <pre><code class="diff python">
+Index: /usr/bin/easy_install
+===================================================================
+--- /usr/bin/easy_install
++++ /usr/bin/easy_install
+@@ -1,1 +1,1 @@
 - #!/usr/bin/python2.6
 + #!/usr/bin/python
   # EASY-INSTALL-ENTRY-SCRIPT: 'distribute==0.6.10','console_scripts','easy_install'
   __requires__ = 'distribute==0.6.10'
-  import sys
-  from pkg_resources import load_entry_point
-    7 if __name__ == '__main__':
-      sys.exit(
-          load_entry_point('distribute==0.6.10', 'console_scripts', 'easy_install')()
-      )
                 </code></pre>
                 <p></p>
                 <pre><code class="bash">
