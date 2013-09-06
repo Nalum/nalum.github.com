@@ -6,6 +6,9 @@
         <link rel="stylesheet" type="text/css" href="/main.css" media="all" />
         <link rel="stylesheet" type="text/css" href="/pygment_trac.css" media="screen" />
         <title>Luke Mallon (Nalum)</title>
+        <link rel="stylesheet" href="/js/styles/solarized_dark.css">
+        <script src="/js/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
     </head>
     <body>
         <!-- HEADER -->
@@ -21,7 +24,7 @@
             <section id="main_content" class="inner">
                 <h2>Setting Python 2.7 as the Default for Amazon Linux AMI</h2>
                 <p></p>
-                <pre class="highlight">
+                <pre><code>
 # sudo su
 # yum install python27
 # cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
@@ -32,9 +35,9 @@
 # ln -s python2.7 python2
 # ln -s pydoc27 pydoc
 # ln -s pydoc27 pydoc2
-                </pre>
-                <p>Update the python path for the easy_install command <code class="highlight"># vim /usr/bin/easy_install</code> so it uses the python symlink we just set up:</p>
-                <pre class="highlight">
+                </code></pre>
+                <p>Update the python path for the easy_install command <code># vim /usr/bin/easy_install</code> so it uses the python symlink we just set up:</p>
+                <pre><code>
 - 1 #!/usr/bin/python2.6
 + 1 #!/usr/bin/python
   2 # EASY-INSTALL-ENTRY-SCRIPT: 'distribute==0.6.10','console_scripts','easy_install'
@@ -46,12 +49,13 @@
   8     sys.exit(
   9         load_entry_point('distribute==0.6.10', 'console_scripts', 'easy_install')()
  10     )
-                </pre>
-                <pre class="highlight">
+                </code></pre>
+                <p></p>
+                <pre><code>
 # yum update
 # yum install gcc python-devel
 # easy_install pip
-                </pre>
+                </code></pre>
             </section>
         </div>
         <!-- FOOTER  -->
