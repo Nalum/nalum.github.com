@@ -24,15 +24,27 @@
         <!-- MAIN CONTENT -->
         <div id="main_content_wrap" class="outer">
             <section id="main_content" class="inner">
-                <h2>Setting Python 2.7 as the Default for Amazon Linux AMI</h2>
+                <h2>AWS Elastic Beanstalk and Python 2.7</h2>
                 <p>
-                    So I've been looking at AWS Elastic Beanstalk and trying to get it up and running.
-                    I've found so far that I can do so simply enough, although the AWS Documentation seems to be out of date with their current CLI tools.
-                    <br>
-                    Using the <a href="http://aws.amazon.com/cli/">Python CLI Tool Kit</a> seems like it will be nice when it's easier to understand what is being done.
-                    With the current state of the Documentation
+                    So I've been looking at AWS Elastic Beanstalk (EB) and trying to
+                    get it up and running. I've found, so far, that I can do so
+                    simply enough. Using the <a href="http://aws.amazon.com/cli/">
+                    Python CLI Tool Kit</a> is quite nice, and the documentation
+                    looks like it's starting to take shape. There still seems to
+                    be some issues with it so I wont be using it for the moment.
                 </p>
-                <pre>Bash<code class="bash">
+                <p>
+                    Using the AWS Console we can setup an EB Application and
+                    Environment and then switch out the Default AMI (ami-c37474b7)
+                    for a custom AMI based on the Default AMI. In this case the
+                    Default AMI is the 64bit Amazon Linux AMI with Python 2.6
+                    version 2012.09. The latest version is not selectable yet,
+                    though you can update to it using <code>yum update</code>.
+                </p>
+                <p>
+
+                </p>
+                <pre><code class="bash">
 sudo su
 yum install python27
 cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
@@ -45,7 +57,7 @@ ln -s pydoc27 pydoc
 ln -s pydoc27 pydoc2
                 </code></pre>
                 <p>Update the python path for the easy_install command so it uses the python symlink we just set up:</p>
-                <pre>Python<code class="diff">
+                <pre><code class="diff">
 --- /usr/bin/easy_install
 +++ /usr/bin/easy_install
 @@ -1,1 +1,1 @@
@@ -55,9 +67,9 @@ ln -s pydoc27 pydoc2
   __requires__ = 'distribute==0.6.10'
                 </code></pre>
                 <p></p>
-                <pre>Bash<code class="bash">
+                <pre><code class="bash">
 yum update
-yum install gcc python-devel
+yum install gcc python27-devel httpd-devel
 easy_install pip
                 </code></pre>
             </section>
