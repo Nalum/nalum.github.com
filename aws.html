@@ -35,9 +35,9 @@
                 </p>
                 <p>
                     Using the AWS Console we can setup an EB Application and
-                    Environment and then switch out the Default AMI (ami-c37474b7)
+                    Environment and then switch out the Default AMI (<code>ami-c37474b7</code>)
                     for a custom AMI based on the Default AMI. In this case the
-                    Default AMI is the 64bit Amazon Linux AMI with Python 2.6
+                    Default AMI is the 64bit Amazon Linux AMI with Python 2.6,
                     version 2012.09. The latest version is not selectable yet,
                     though you can update to it using <code>yum update</code>.
                 </p>
@@ -46,14 +46,14 @@
                     default instead of Python 2.6. I have successfully done this
                     using the method below. There is one issue that I've found
                     with this method and that is if there is an update for python
-                    2.6 it reverses one of the changes made. I'll mark that out
+                    2.6 it reverses some of the changes made. I'll mark that out
                     below when going through the steps.
                 </p>
                 <p>
-                    So to start with, you want to create a new instance of ami-c37474b7.
-                    Now you want to do this through the EC2 interface and not
-                    the EB interface as we will be creating our own AMI based on
-                    the changes that we make.
+                    So to start with, you want to create a new instance of
+                    <code>ami-c37474b7</code>. Now you want to do this through
+                    the EC2 interface and not the EB interface as we will be
+                    creating our own AMI based on the changes that we make.
                 </p>
                 <p>
                     Once the machine is booted get the generated URL/IP and ssh
@@ -88,7 +88,7 @@ ln -s python2.7-config python-config2
                 </code></pre>
                 <p>
                     Once that is done we then update the easy_install command so
-                    that it will use Python 2.7. If you did the above 4 commands
+                    that it will use Python 2.7. If you ran the above symlink commands
                     then update easy_install to run off <code>/usr/bin/python</code>
                     other wise update it to run off <code>/usr/bin/python2.7</code>.
                     I did not see it but I would guess that a <code>yum update</code>
@@ -101,19 +101,17 @@ ln -s python2.7-config python-config2
 &gt; #!/usr/bin/python
                 </code></pre>
                 <p>
-                    With the above change done we can now install pip. This will
-                    install the latest version of pip for python 2.7. Note: If you didn't
-                    run the symlink commands then use python2.7 instead of python.
+                    With the above change done we can now install pip.
                 </p>
                 <pre>/usr/bin<code>
 easy_install pip
                 </code></pre>
                 <p>
-                    We're almost there. If you try running python directly now
-                    you will be running 2.7 but if you try running a wsgi
-                    application you will be running 2.6 still. So we need to get
-                    mod_wsgi to run with 2.7, this mean compiling our own version
-                    of mod_wsgi to run against 2.7 instead of 2.6.
+                    If you try running python directly now you will be running
+                    2.7 but if you try running a wsgi application you will be
+                    running 2.6 still. So we need to get mod_wsgi to run with
+                    2.7, this means compiling our own version of mod_wsgi to run
+                    against 2.7 instead of 2.6.
                 </p>
                 <p>
                     This shouldn't be too dificult. At the beginning of this we
@@ -133,19 +131,44 @@ make install
                 </p>
                 <pre>/etc/httpd/conf.d/wsgi.conf<code>
 2c2
-&lt; LoadModule wsgi_module "/home/ec2-user/mod_wsgi.so"
+&lt; LoadModule wsgi_module "/usr/lib64/httpd/modules/mod_wsgi.so"
 ---
-&gt; LoadModule wsgi_module "/usr/lib64/httpd/modules/mod_wsgi.so"
+&gt; LoadModule wsgi_module "/home/ec2-user/mod_wsgi-3.4/.libs/mod_wsgi.so"
 9,10c9,10
-&lt; Alias /static /opt/python/current/app/static/
-&lt; &lt;Directory /opt/python/current/app/static/&gt;
+&lt; Alias /static /opt/python/current/app/
+&lt; &lt;Directory /opt/python/current/app/&gt;
 ---
-&gt; Alias /static /opt/python/current/app/
-&gt; &lt;Directory /opt/python/current/app/&gt;
+&gt; Alias /static /opt/python/current/app/static
+&gt; &lt;Directory /opt/python/current/app/static&gt;
 25c25
-&lt;   python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \
+&lt;   python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.6/site-packages user=wsgi group=wsgi \
 ---
-&gt;   python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.6/site-packages user=wsgi group=wsgi \
+&gt;   python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \
+                </code></pre>
+                <p>
+                    With that done <code>mod_wsgi.so</code> is going to look for
+                    the python packages in <code>/opt/python/run/venv/lib/python2.7/site-packages</code>
+                    so we need to create these folders <code>python2.7/site-packages</code>
+                    but we are going to do that in <code>/opt/python/run/baselinenv</code>.
+                    We also need to update apply the following patches to <code>/opt/python/run/baselinenv/bin/easy_install</code>
+                    and <code>/opt/python/run/baselinenv/bin/pip</code> and create
+                    a new symlink to <code>/usr/bin/python</code>.
+                </p>
+                <pre>/opt/python/run/baselinenv/bin<code>
+                    rm ./python
+                    ln -s /usr/bin/python
+                </code></pre>
+                <pre>/opt/python/run/baselinenv/bin/easy_install<code>
+1c1
+&lt; #!/usr/bin/python2.6
+---
+&gt; #!/usr/bin/python
+                </code></pre>
+                <pre>/opt/python/run/baselinenv/bin/pip<code>
+1c1
+&lt; #!/usr/bin/python2.6
+---
+&gt; #!/usr/bin/python
                 </code></pre>
             </section>
         </div>
