@@ -143,8 +143,9 @@ make install</code></pre>
                     a new symlink to <code>/usr/bin/python</code>.
                 </p>
                 <pre>cd /opt/python/run/baselinenv/bin<code>rm ./python
-ln -s /usr/bin/python</code>/opt/python/run/baselinenv/bin/easy_install
-/opt/python/run/baselinenv/bin/pip<code>1c1
+ln -s /usr/bin/python</code>
+diff /opt/python/run/baselinenv/bin/easy_install
+diff /opt/python/run/baselinenv/bin/pip<code>1c1
 &lt; #!/usr/bin/python2.6
 ---
 &gt; #!/usr/bin/python</code></pre>
