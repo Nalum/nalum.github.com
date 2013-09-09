@@ -67,20 +67,19 @@
                     update to the first thing to be done. Note: All commands
                     should be run as the root user.
                 </p>
-                <pre><code class="bash">
+                <pre>/home/ec2-user<code class="bash">
 yum update
 yum install gcc python27 python27-devel httpd-devel make
 cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
 cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
 rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2
-cd /usr/bin
                 </code></pre>
                 <p>
-                    These next 4 commands are make Python 2.7 the default and
+                    These next set of commands make Python 2.7 the default and are
                     what the update undid. So it is up to you if you want to
                     do this part or not.
                 </p>
-                <pre><code class="bash">
+                <pre>/usr/bin<code class="bash">
 ln -s python2.7 python
 ln -s python2.7 python2
 ln -s pydoc27 pydoc
@@ -104,9 +103,10 @@ ln -s python2.7-config python-config2
                 </code></pre>
                 <p>
                     With the above change done we can now install pip. This will
-                    install the latest version of pip for python 2.7.
+                    install the latest version of pip for python 2.7. Note: If you didn't
+                    run the symlink commands then use python2.7 instead of python.
                 </p>
-                <pre><code class="bash">
+                <pre>/usr/bin<code class="bash">
 easy_install pip
                 </code></pre>
                 <p>
@@ -121,12 +121,11 @@ easy_install pip
                     installed gcc, python27-devel and httpd-devel. These are required
                     to build the new version of mod_wsgi that runs against 2.7.
                 </p>
-                <pre><code class="bash">
-cd /home/ec2-user
+                <pre>/home/ec2-user<code class="bash">
 curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 tar xvzf mod_wsgi-3.4.tar.gz
 cd mod_wsgi-3.4
-./configure --with-python=/usr/bin/python
+./configure --with-python=/usr/bin/python # Note: Use python2.7 if you didn't run the symlink commands above.
 make install
                 </code></pre>
                 <p>
