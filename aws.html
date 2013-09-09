@@ -66,7 +66,7 @@
                     update to the first thing to be done. Note: All commands
                     should be run as the root user.
                 </p>
-                <pre>/home/ec2-user<code>yum update
+                <pre>cd /home/ec2-user<code>yum update
 yum install gcc python27 python27-devel httpd-devel make
 cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
 cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
@@ -76,7 +76,7 @@ rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/p
                     what the update undid. So it is up to you if you want to
                     do this part or not.
                 </p>
-                <pre>/usr/bin<code>ln -s python2.7 python
+                <pre>cd /usr/bin<code>ln -s python2.7 python
 ln -s python2.7 python2
 ln -s pydoc27 pydoc
 ln -s pydoc27 pydoc2
@@ -90,14 +90,14 @@ ln -s python2.7-config python-config2</code></pre>
                     I did not see it but I would guess that a <code>yum update</code>
                     to easy_install would over write this change also.
                 </p>
-                <pre>/usr/bin/easy_install<code>1c1
+                <pre>diff /usr/bin/easy_install<code>1c1
 &lt; #!/usr/bin/python2.6
 ---
 &gt; #!/usr/bin/python</code></pre>
                 <p>
                     With the above change done we can now install pip.
                 </p>
-                <pre>/usr/bin<code>easy_install pip</code></pre>
+                <pre>cd /usr/bin<code>easy_install pip</code></pre>
                 <p>
                     If you try running python directly now you will be running
                     2.7 but if you try running a wsgi application you will be
@@ -110,7 +110,7 @@ ln -s python2.7-config python-config2</code></pre>
                     installed gcc, python27-devel and httpd-devel. These are required
                     to build the new version of mod_wsgi that runs against 2.7.
                 </p>
-                <pre>/home/ec2-user<code>curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
+                <pre>cd /home/ec2-user<code>curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 tar xvzf mod_wsgi-3.4.tar.gz
 cd mod_wsgi-3.4
 ./configure --with-python=/usr/bin/python # Note: Use python2.7 if you didn't run the symlink commands above.
@@ -119,7 +119,7 @@ make install</code></pre>
                     Next we want to update the wsgi.conf file so it uses the new
                     configured mod_wsgi.so above and python 2.7
                 </p>
-                <pre>/etc/httpd/conf.d/wsgi.conf<code>2c2
+                <pre>diff /etc/httpd/conf.d/wsgi.conf<code>2c2
 &lt; LoadModule wsgi_module "/usr/lib64/httpd/modules/mod_wsgi.so"
 ---
 &gt; LoadModule wsgi_module "/home/ec2-user/mod_wsgi-3.4/.libs/mod_wsgi.so"
@@ -142,12 +142,9 @@ make install</code></pre>
                     and <code>/opt/python/run/baselinenv/bin/pip</code> and create
                     a new symlink to <code>/usr/bin/python</code>.
                 </p>
-                <pre>/opt/python/run/baselinenv/bin<code>rm ./python
-ln -s /usr/bin/python</code>
-/opt/python/run/baselinenv/bin/easy_install
-/opt/python/run/baselinenv/bin/pip
-<code>
-1c1
+                <pre>cd /opt/python/run/baselinenv/bin<code>rm ./python
+ln -s /usr/bin/python</code>/opt/python/run/baselinenv/bin/easy_install
+/opt/python/run/baselinenv/bin/pip<code>1c1
 &lt; #!/usr/bin/python2.6
 ---
 &gt; #!/usr/bin/python</code></pre>
@@ -156,8 +153,7 @@ ln -s /usr/bin/python</code>
                     and copy certain files from the Python 2.6 lib folder. This
                     should give us a working Python 2.7 setup.
                 </p>
-                <pre>/opt/python/run/baselinenv/lib/python2.7<code>pip install weakrefset</code>
-/opt/python/run/baselinenv/lib/python2.7<code>mkdir distutils
+                <pre>cd /opt/python/run/baselinenv/lib/python2.7<code>pip install weakrefset</code>&nbsp;<code>mkdir distutils
 cp ../python2.6/distutils/* ./distutils
 cp ../python2.6/no-global-site-packages.txt ./
 cp ../python2.6/orig-prefix.txt ./
@@ -165,8 +161,7 @@ mkdir site-packages
 cp ../python2.6/site-packages/* ./site-packages
 rm -rf ./site-packages/pip-*
 cp -r /usr/lib64/python2.7/site-packages/pip-1.4.1-py2.7.egg ./site-packages
-cp ../python2.6/site.py ./</code>
-/opt/python/run/baselinenv/lib/python2.7<code>ln -s /usr/lib64/python2.7/_abcoll.py
+cp ../python2.6/site.py ./</code>&nbsp;<code>ln -s /usr/lib64/python2.7/_abcoll.py
 ln -s /usr/lib64/python2.7/abc.py
 ln -s /usr/lib64/python2.7/codecs.py
 ln -s /usr/lib64/python2.7/config
@@ -191,7 +186,7 @@ ln -s /usr/lib64/python2.7/UserDict.py
 ln -s /usr/lib64/python2.7/warnings.py
 ln -s /usr/lib64/python2.7/_weakrefset.py</code></pre>
                 <p>
-                    And finally for good measure restart the httpd server.
+                    And finally, for good measure, restart the httpd server and hopefully you wont get any errors
                 </p>
                 <pre><code>httpd -k restart</code></pre>
             </section>
