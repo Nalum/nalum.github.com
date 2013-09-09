@@ -96,14 +96,11 @@ ln -s python2.7-config python-config2
                     I did not see it but I would guess that a <code>yum update</code>
                     to easy_install would over write this change also.
                 </p>
-                <pre><code class="diff">
---- /usr/bin/easy_install
-+++ /usr/bin/easy_install
-@@ -1,1 +1,1 @@
-- #!/usr/bin/python2.6
-+ #!/usr/bin/python
-  # EASY-INSTALL-ENTRY-SCRIPT: 'distribute==0.6.10','console_scripts','easy_install'
-  __requires__ = 'distribute==0.6.10'
+                <pre>/usr/bin/easy_install<code class="diff">
+1c1
+&lt; #!/usr/bin/python2.6
+---
+&gt; #!/usr/bin/python
                 </code></pre>
                 <p>
                     With the above change done we can now install pip. This will
@@ -136,30 +133,21 @@ make install
                     Next we want to update the wsgi.conf file so it uses the new
                     configured mod_wsgi.so above and python 2.7
                 </p>
-                <pre><code class="diff">
---- /etc/httpd/conf.d/wsgi.conf
-+++ /etc/httpd/conf.d/wsgi.conf
-@@ -1,1 +1,1 @@
-- LoadModule wsgi_module "/home/ec2-user/mod_wsgi.so"
-+ LoadModule wsgi_module "/home/ec2-user/mod_wsgi.so"
-  WSGIPythonHome /opt/python/run/baselinenv
-  WSGISocketPrefix run/wsgi
-  WSGIRestrictEmbedded On
-
-@@ -1,1 +1,1 @@
-- Alias /static /opt/python/current/app/
-- &lt;Directory /opt/python/current/app/&gt;
-+ Alias /static /opt/python/current/app/static/
-+ &lt;Directory /opt/python/current/app/static/&gt;
-  Order allow,deny
-  Allow from all
-  &lt;/Directory&gt;
-
-  WSGIDaemonProcess wsgi processes=1 threads=15 display-name=%{GROUP} \
-- python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.6/site-packages user=wsgi group=wsgi \
-+ python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \
-  home=/opt/python/current/app
-  WSGIProcessGroup wsgi
+                <pre>/etc/httpd/conf.d/wsgi.conf<code class="diff">
+2c2
+&lt; LoadModule wsgi_module "/home/ec2-user/mod_wsgi.so"
+---
+&gt; LoadModule wsgi_module "/usr/lib64/httpd/modules/mod_wsgi.so"
+9,10c9,10
+&lt; Alias /static /opt/python/current/app/static/
+&lt; &lt;Directory /opt/python/current/app/static/&gt;
+---
+&gt; Alias /static /opt/python/current/app/
+&gt; &lt;Directory /opt/python/current/app/&gt;
+25c25
+&lt;   python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \
+---
+&gt;   python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.6/site-packages user=wsgi group=wsgi \
                 </code></pre>
             </section>
         </div>
