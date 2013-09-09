@@ -143,8 +143,7 @@ make install</code></pre>
                     a new symlink to <code>/usr/bin/python</code>.
                 </p>
                 <pre>/opt/python/run/baselinenv/bin<code>rm ./python
-ln -s /usr/bin/python
-                </code>
+ln -s /usr/bin/python</code>
 /opt/python/run/baselinenv/bin/easy_install
 /opt/python/run/baselinenv/bin/pip
 <code>
@@ -153,35 +152,35 @@ ln -s /usr/bin/python
 ---
 &gt; #!/usr/bin/python</code></pre>
                 <p>
-                    Last thing we need to do is install the weakrefset module,
-                    create symlinks and copy certain files from the Python 2.6
-                    lib folder. This should give us a working Python 2.7 setup.
+                    Now we need to install the weakrefset module, create symlinks
+                    and copy certain files from the Python 2.6 lib folder. This
+                    should give us a working Python 2.7 setup.
                 </p>
-                <pre>/opt/python/run/baselinenv/lib/python2.7<code>pip install weakrefset
-ln -s /usr/lib64/python2.7/_abcoll.py
+                <pre>/opt/python/run/baselinenv/lib/python2.7<code>pip install weakrefset</code>
+/opt/python/run/baselinenv/lib/python2.7<code>mkdir distutils
+cp ../python2.6/distutils/* ./distutils
+cp ../python2.6/no-global-site-packages.txt ./
+cp ../python2.6/orig-prefix.txt ./
+mkdir site-packages
+cp ../python2.6/site-packages/* ./site-packages
+rm -rf ./site-packages/pip-*
+cp -r /usr/lib64/python2.7/site-packages/pip-1.4.1-py2.7.egg ./site-packages
+cp ../python2.6/site.py ./</code>
+/opt/python/run/baselinenv/lib/python2.7<code>ln -s /usr/lib64/python2.7/_abcoll.py
 ln -s /usr/lib64/python2.7/abc.py
 ln -s /usr/lib64/python2.7/codecs.py
 ln -s /usr/lib64/python2.7/config
 ln -s /usr/lib64/python2.7/copy_reg.py
-mkdir distutils
-cp ../python2.6/distutils/* ./distutils
 ln -s /usr/lib64/python2.7/encodings
 ln -s /usr/lib64/python2.7/fnmatch.py
 ln -s /usr/lib64/python2.7/genericpath.py
 ln -s /usr/lib64/python2.7/lib-dynload
 ln -s /usr/lib64/python2.7/linecache.py
 ln -s /usr/lib64/python2.7/locale.py
-cp ../python2.6/no-global-site-packages.txt ./
 ln -s /usr/lib64/python2.7/ntpath.py
-cp ../python2.6/orig-prefix.txt ./
 ln -s /usr/lib64/python2.7/os.py
 ln -s /usr/lib64/python2.7/posixpath.py
 ln -s /usr/lib64/python2.7/re.py
-mkdir site-packages
-cp ../python2.6/site-packages/* ./site-packages
-rm -rf ./site-packages/pip-*
-cp -r /usr/lib64/python2.7/site-packages/pip-1.4.1-py2.7.egg ./site-packages
-cp ../python2.6/site.py ./
 ln -s /usr/lib64/python2.7/sre_compile.py
 ln -s /usr/lib64/python2.7/sre_constants.py
 ln -s /usr/lib64/python2.7/sre_parse.py
@@ -191,6 +190,10 @@ ln -s /usr/lib64/python2.7/types.py
 ln -s /usr/lib64/python2.7/UserDict.py
 ln -s /usr/lib64/python2.7/warnings.py
 ln -s /usr/lib64/python2.7/_weakrefset.py</code></pre>
+                <p>
+                    And finally for good measure restart the httpd server.
+                </p>
+                <pre><code>httpd -k restart</code></pre>
             </section>
         </div>
         <!-- FOOTER  -->
