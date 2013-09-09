@@ -143,9 +143,12 @@ make install</code></pre>
                     a new symlink to <code>/usr/bin/python</code>.
                 </p>
                 <pre>cd /opt/python/run/baselinenv/bin<code>rm ./python
-ln -s /usr/bin/python</code>
-diff /opt/python/run/baselinenv/bin/easy_install
-diff /opt/python/run/baselinenv/bin/pip<code>1c1
+ln -s /usr/bin/python</code></pre>
+                <pre>diff /opt/python/run/baselinenv/bin/easy_install<code>1c1
+&lt; #!/usr/bin/python2.6
+---
+&gt; #!/usr/bin/python</code></pre>
+                <pre>diff /opt/python/run/baselinenv/bin/pip<code>1c1
 &lt; #!/usr/bin/python2.6
 ---
 &gt; #!/usr/bin/python</code></pre>
@@ -154,7 +157,8 @@ diff /opt/python/run/baselinenv/bin/pip<code>1c1
                     and copy certain files from the Python 2.6 lib folder. This
                     should give us a working Python 2.7 setup.
                 </p>
-                <pre>cd /opt/python/run/baselinenv/lib/python2.7<code>pip install weakrefset</code>&nbsp;<code>mkdir distutils
+                <pre>cd /opt/python/run/baselinenv/lib/python2.7<code>pip install weakrefset</code></pre>
+                <pre><code>mkdir distutils
 cp ../python2.6/distutils/* ./distutils
 cp ../python2.6/no-global-site-packages.txt ./
 cp ../python2.6/orig-prefix.txt ./
@@ -162,7 +166,8 @@ mkdir site-packages
 cp ../python2.6/site-packages/* ./site-packages
 rm -rf ./site-packages/pip-*
 cp -r /usr/lib64/python2.7/site-packages/pip-1.4.1-py2.7.egg ./site-packages
-cp ../python2.6/site.py ./</code>&nbsp;<code>ln -s /usr/lib64/python2.7/_abcoll.py
+cp ../python2.6/site.py ./</code></pre>
+                <pre><code>ln -s /usr/lib64/python2.7/_abcoll.py
 ln -s /usr/lib64/python2.7/abc.py
 ln -s /usr/lib64/python2.7/codecs.py
 ln -s /usr/lib64/python2.7/config
@@ -187,7 +192,7 @@ ln -s /usr/lib64/python2.7/UserDict.py
 ln -s /usr/lib64/python2.7/warnings.py
 ln -s /usr/lib64/python2.7/_weakrefset.py</code></pre>
                 <p>
-                    And finally, for good measure, restart the httpd server and hopefully you wont get any errors
+                    And finally, for good measure, restart the <code>httpd</code> server and hopefully you wont get any errors.
                 </p>
                 <pre><code>httpd -k restart</code></pre>
             </section>
