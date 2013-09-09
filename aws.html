@@ -26,7 +26,7 @@
             <section id="main_content" class="inner">
                 <h2>AWS Elastic Beanstalk and Python 2.7</h2>
                 <p>
-                    So I've been looking at AWS Elastic Beanstalk (EB) and trying to
+                    I've been looking at AWS Elastic Beanstalk (EB) and trying to
                     get it up and running. I've found, so far, that I can do so
                     simply enough. Using the <a href="http://aws.amazon.com/cli/">
                     Python CLI Tool Kit</a> is quite nice, and the documentation
@@ -42,21 +42,60 @@
                     though you can update to it using <code>yum update</code>.
                 </p>
                 <p>
-
+                    What I am trying to do here is get Python 2.7 setup as the
+                    default instead of Python 2.6. I have successfully done this
+                    using the method below. There is one issue that I've found
+                    with this method and that is if there is an update for python
+                    2.6 it reverses one of the changes made. I'll mark that out
+                    below when going through the steps.
+                </p>
+                <h3>Step 1</h3>
+                <p>
+                    So to start with, you want to create a new instance of ami-c37474b7.
+                    Now you want to do this through the EC2 interface and not
+                    the EB interface as we will be creating our own AMI based on
+                    the changes that we make.
+                </p>
+                <p>
+                    Once the machine is booted get the generated URL/IP and ssh
+                    into it. Once you have ssh'd in run the following set of
+                    commands.
+                </p>
+                <p>
+                    When I did this first, I ran the update after completing
+                    the steps which then undid part of it. So I've moved the
+                    update to the first thing to be done. Note: All commands
+                    should be run as the root user.
                 </p>
                 <pre><code class="bash">
-sudo su
-yum install python27
+yum update
+yum install gcc python27 python27-devel httpd-devel make
 cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
 cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
-rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2
+rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2
 cd /usr/bin
+                </code></pre>
+                <p>
+                    These next 4 commands are make Python 2.7 the default and
+                    what the update undid. So it is up to you if you want to
+                    do this part or not.
+                </p>
+                <pre><code class="bash">
 ln -s python2.7 python
 ln -s python2.7 python2
 ln -s pydoc27 pydoc
 ln -s pydoc27 pydoc2
+ln -s python2.7-config python-config
+ln -s python2.7-config python-config2
                 </code></pre>
-                <p>Update the python path for the easy_install command so it uses the python symlink we just set up:</p>
+                <p>
+                    Once that is done we then update the easy_install command so
+                    that it will use Python 2.7. If you did the above 4 commands
+                    then update easy_install to run off <code>/usr/bin/python</code>
+                    other wise update it to run off <code>/usr/bin/python2.7</code>.
+                    I did not see it but I would guess that a <code>yum update</code>
+                    to easy_install would over write this change also.
+                </p>
                 <pre><code class="diff">
 --- /usr/bin/easy_install
 +++ /usr/bin/easy_install
@@ -66,11 +105,61 @@ ln -s pydoc27 pydoc2
   # EASY-INSTALL-ENTRY-SCRIPT: 'distribute==0.6.10','console_scripts','easy_install'
   __requires__ = 'distribute==0.6.10'
                 </code></pre>
-                <p></p>
+                <p>
+                    With the above change done we can now install pip. This will
+                    install the latest version of pip for python 2.7.
+                </p>
                 <pre><code class="bash">
-yum update
-yum install gcc python27-devel httpd-devel
 easy_install pip
+                </code></pre>
+                <p>
+                    We're almost there. If you try running python directly now
+                    you will be running 2.7 but if you try running a wsgi
+                    application you will be running 2.6 still. So we need to get
+                    mod_wsgi to run with 2.7, this mean compiling our own version
+                    of mod_wsgi to run against 2.7 instead of 2.6.
+                </p>
+                <p>
+                    This shouldn't be too dificult. At the beginning of this we
+                    installed gcc, python27-devel and httpd-devel. These are required
+                    to build the new version of mod_wsgi that runs against 2.7.
+                </p>
+                <pre><code class="bash">
+cd /home/ec2-user
+curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
+tar xvzf mod_wsgi-3.4.tar.gz
+cd mod_wsgi-3.4
+./configure --with-python=/usr/bin/python
+make install
+                </code></pre>
+                <p>
+                    Next we want to update the wsgi.conf file so it uses the new
+                    configured mod_wsgi.so above and python 2.7
+                </p>
+                <pre><code class="diff">
+--- /etc/httpd/conf.d/wsgi.conf
++++ /etc/httpd/conf.d/wsgi.conf
+@@ -1,1 +1,1 @@
+- LoadModule wsgi_module "/home/ec2-user/mod_wsgi.so"
++ LoadModule wsgi_module "/home/ec2-user/mod_wsgi.so"
+  WSGIPythonHome /opt/python/run/baselinenv
+  WSGISocketPrefix run/wsgi
+  WSGIRestrictEmbedded On
+
+@@ -1,1 +1,1 @@
+- Alias /static /opt/python/current/app/
+- &lt;Directory /opt/python/current/app/&gt;
++ Alias /static /opt/python/current/app/static/
++ &lt;Directory /opt/python/current/app/static/&gt;
+  Order allow,deny
+  Allow from all
+  &lt;/Directory&gt;
+
+  WSGIDaemonProcess wsgi processes=1 threads=15 display-name=%{GROUP} \
+- python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.6/site-packages user=wsgi group=wsgi \
++ python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \
+  home=/opt/python/current/app
+  WSGIProcessGroup wsgi
                 </code></pre>
             </section>
         </div>
