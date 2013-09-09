@@ -65,22 +65,22 @@
                     into it. Once you have ssh'd in run the following set of
                     commands.
                 </p>
-                <p>
+                <!-- <p>
                     When I did this first, I ran the update after completing
                     the steps which then undid part of it. So I've moved the
                     update to the first thing to be done. Note: All commands
                     should be run as the root user.
-                </p>
+                </p> -->
                 <pre>cd /home/ec2-user<code>yum update
 yum install gcc python27 python27-devel httpd-devel make
 cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
 cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
 rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2</code></pre>
-                <p>
+                <!-- <p>
                     These next set of commands make Python 2.7 the default and are
                     what the <code>yum update</code> undid. So it is up to you if you want to
                     do this part or not.
-                </p>
+                </p> -->
                 <pre>cd /usr/bin<code>ln -s python2.7 python
 ln -s python2.7 python2
 ln -s pydoc27 pydoc
@@ -88,12 +88,8 @@ ln -s pydoc27 pydoc2
 ln -s python2.7-config python-config
 ln -s python2.7-config python-config2</code></pre>
                 <p>
-                    Once that is done we then update the <code>easy_install</code> command so
-                    that it will use Python 2.7. If you ran the above symlink commands
-                    then update <code>easy_install</code> to run off <code>/usr/bin/python</code>
-                    other wise update it to run off <code>/usr/bin/python2.7</code>.
-                    I did not see it but I would guess that a <code>yum update</code>
-                    to <code>easy_install</code> would over write this change also.
+                    Once that is done we then update the <code>easy_install</code>
+                    command so that it will use Python 2.7
                 </p>
                 <pre>diff /usr/bin/easy_install<code>1c1
 &lt; #!/usr/bin/python2.6
@@ -114,8 +110,8 @@ ln -s python2.7-config python-config2</code></pre>
                     This shouldn't be too dificult. At the beginning of this we
                     installed <code>gcc</code>, <code>python27-devel</code>,
                     <code>httpd-devel</code> and <code>make</code>. These are
-                    required to build the new version of mod_wsgi that runs
-                    against 2.7.
+                    required to build the new version of <code>mod_wsgi</code>
+                    that runs against 2.7.
                 </p>
                 <pre>cd /opt<code>curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 tar xvzf mod_wsgi-3.4.tar.gz
@@ -161,9 +157,9 @@ ln -s /usr/bin/python</code></pre>
 ---
 &gt; #!/usr/bin/python</code></pre>
                 <p>
-                    Now we need to install the weakrefset module, create symlinks
-                    and copy certain files from the Python 2.6 lib folder. This
-                    should give us a working Python 2.7 setup.
+                    Now we need to install the <code>weakrefset</code> module,
+                    create symlinks and copy certain files from the Python 2.6
+                    lib folder. This should give us a working Python 2.7 setup.
                 </p>
                 <pre>cd /opt/python/run/baselinenv/lib<code>pip install weakrefset</code></pre>
                 <pre><code>mkdir python2.7
@@ -202,7 +198,11 @@ ln -s /usr/lib64/python2.7/UserDict.py
 ln -s /usr/lib64/python2.7/warnings.py
 ln -s /usr/lib64/python2.7/_weakrefset.py</code></pre>
                 <p>
-                    And finally, for good measure, restart the <code>httpd</code> server and hopefully you wont get any errors.
+                    Now we want to deploy a version of our app.
+                </p>
+                <p>
+                    And finally, for good measure, restart the <code>httpd</code>
+                    server and hopefully you wont get any errors.
                 </p>
                 <pre><code>httpd -k restart</code></pre>
             </section>
