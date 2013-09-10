@@ -42,15 +42,12 @@
                     though you can update to it using <code>yum update</code>.
                 </p>
                 <p>
-                    What I am trying to do here is get Python 2.7 setup as the
+                    So I'm going to run through setting up Python 2.7 as the
                     default instead of Python 2.6. I have successfully done this
-                    using the method below. There is one issue that I've found
-                    with this method and that is if there is an update for python
-                    2.6 it reverses some of the changes made. I'll mark that out
-                    below when going through the steps.
+                    using the method below.
                 </p>
                 <p>
-                    So to start with, you want to create a new instance of
+                    To start with, you want to create a new instance of
                     <code>ami-c37474b7</code> I've been told that you need to do
                     this through the EC2 interface rather than the EB interface
                     but I've found that if you do it that way you don't get all
@@ -64,18 +61,35 @@
                     commands.
                 </p>
                 <pre>cd /home/ec2-user<code>yum update
-yum install gcc python27 python27-devel httpd-devel make</code></pre>
+yum install gcc python27 python27-devel httpd-devel make
+cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
+cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
+rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2</code></pre>
+                <p>
+                    These next set of commands make Python 2.7 the default and are
+                    what the <code>yum update</code> undid. So it is up to you if you want to
+                    do this part or not.
+                </p>
+                <pre>cd /usr/bin<code>ln -s python2.7 python
+ln -s python2.7 python2
+ln -s pydoc27 pydoc
+ln -s pydoc27 pydoc2
+ln -s python2.7-config python-config
+ln -s python2.7-config python-config2</code></pre>
                 <p>
                     So we need to get <code>mod_wsgi</code> to run with 2.7,
                     this means compiling our own version of <code>mod_wsgi</code>
-                    to run against 2.7 instead of 2.6.
+                    to run against 2.7 instead of 2.6. This shouldn't be too dificult.
                 </p>
                 <p>
-                    This shouldn't be too dificult. At the beginning of this we
-                    installed <code>gcc</code>, <code>python27-devel</code>,
-                    <code>httpd-devel</code> and <code>make</code>. These are
-                    required to build the new version of <code>mod_wsgi</code>
-                    that runs against 2.7.
+                    Along with <code>python2.7</code> we just installed <code>gcc</code>,
+                    <code>python27-devel</code>, <code>httpd-devel</code> and
+                    <code>make</code>. These are required to build the new version
+                    of <code>mod_wsgi</code> that runs against 2.7.
+                </p>
+                <p>
+                    Now we will download, untar, configure and make install the
+                    new version of <code>mod_wsgi</code> for Python 2.7.
                 </p>
                 <pre>cd /opt<code>curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 tar xvzf mod_wsgi-3.4.tar.gz
@@ -104,14 +118,18 @@ make install</code></pre>
 &gt;         contents.append('Alias %s %sstatic' % (key, os.path.join(APP_DIR, value)))
 &gt;         contents.append('&lt;Directory %sstatic&gt;' % os.path.join(APP_DIR, value))</code></pre>
                 <p>
-                    With that done .
+                    With that done we want to update the python virtual environments
+                    to use Python 2.7.
                 </p>
                 <pre>cd /opt/python/run<code>rm ./baselinenv/bin/python
 virtualenv --no-site-packages -p python2.7 baselinenv
 rm ./venv/bin/python
 virtualenv --no-site-packages -p python2.7 venv</code></pre>
                 <p>
-                    Now we want to deploy a version of our app.
+                    Now we want to deploy a version of our app. You can do this
+                    by uploading a ZIP file through the AWS EB Console or if you
+                    have the EB CLI Tool install you can use the git command
+                    <code>git aws.push --environment test-env</code>.
                 </p>
                 <p>
                     And finally, for good measure, restart the <code>httpd</code>
