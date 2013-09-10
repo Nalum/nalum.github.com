@@ -36,9 +36,9 @@
                 <p>
                     Using the AWS Console we can setup an EB Application and
                     Environment and then switch out the Default AMI (<code>ami-c37474b7</code>)
-                    for a custom AMI based on the Default AMI. In this case the
-                    Default AMI is the 64bit Amazon Linux AMI with Python 2.6,
-                    version 2012.09. The latest version is not selectable yet,
+                    for a custom one based on the Default. In this case the
+                    Default AMI is the 64bit Amazon Linux AMI with Python 2.6
+                    (version 2012.09). The latest version (2013.03) is not selectable yet,
                     though you can update to it using <code>yum update</code>.
                 </p>
                 <p>
@@ -48,7 +48,7 @@
                 </p>
                 <p>
                     To start with, you want to create a new instance of
-                    <code>ami-c37474b7</code> I've been told that you need to do
+                    <code>ami-c37474b7</code>, I've been told that you need to do
                     this through the EC2 interface rather than the EB interface
                     but I've found that if you do it that way you don't get all
                     the software needed on the system to get it up and running as
@@ -57,13 +57,14 @@
                 <p>
                     So create your application and create a temporary environment.
                     Once the machine is booted get the generated URL/IP and ssh
-                    into it. Once you have ssh'd in run the following set of
-                    commands.
+                    into it. Once you have, run the following set of commands.
+                    <strong>Note:</strong> All commands run as the root user.
                 </p>
                 <pre>cd /home/ec2-user<code>yum update
 yum install gcc python27 python27-devel httpd-devel make</code></pre>
                 <p>
-                    These next set of commands make Python 2.7 the default.
+                    The next set of commands make Python 2.7 the default for the
+                    system.
                 </p>
                 <pre>cd /usr/bin<code>rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2
 ln -s python2.7 python
@@ -94,7 +95,7 @@ cp -r /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/</
                     to run against 2.7 instead of 2.6. This shouldn't be too dificult.
                 </p>
                 <p>
-                    Along with <code>python2.7</code> we just installed <code>gcc</code>,
+                    Along with <code>python2.7</code> we installed <code>gcc</code>,
                     <code>python27-devel</code>, <code>httpd-devel</code> and
                     <code>make</code>. These are required to build the new version
                     of <code>mod_wsgi</code> that runs against 2.7.
@@ -112,8 +113,11 @@ make install</code></pre>
                     Next we want to update the <code>wsgi.conf</code> file so it
                     uses the new configured <code>mod_wsgi.so</code> above and
                     Python 2.7. In my case I am also updating the location of the
-                    wsgi static folder. You will also need to remove the compiled
-                    version of the file<br><code>rm /opt/elasticbeanstalk/hooks/config.pyc</code>.
+                    wsgi static folder. But you'll need to update the template
+                    for the file as it will be over written with changes to the
+                    environment. The template is in <code>/opt/elasticbeanstalk/hooks/config.py</code>.
+                    You will also need to remove the compiled version of the file
+                    <br><code>rm /opt/elasticbeanstalk/hooks/config.pyc</code>.
                 </p>
                 <pre>diff /opt/elasticbeanstalk/hooks/config.py<code>32c32
 &lt; LoadModule wsgi_module modules/mod_wsgi.so
@@ -136,14 +140,19 @@ make install</code></pre>
                 <pre>cd /opt/python/run<code>virtualenv baselinenv
 virtualenv venv</code></pre>
                 <p>
-                    Now we want to deploy a version of our app. You can do this
+                    Now we can deploy a version of our app. You can do this
                     by uploading a ZIP file through the AWS EB Console or if you
-                    have the EB CLI Tool installed you can use the git command
+                    have the <a href="http://aws.amazon.com/code/6752709412171743">EB CLI Tool</a>
+                    installed you can use the git command
                     <code>git aws.push --environment test-env</code>.
                 </p>
                 <p>
                     And that's it, you now have Elastic Beanstalk setup with
-                    Amazon Linux AMI Python 2.7.
+                    Amazon Linux AMI with Python 2.7 setup as the system default.
+                    At this point you should make your own AMI. Very easy to do
+                    from the AWS EC2 Console. When you have made your own AMI
+                    go to the configuration of your Application Environment
+                    and change the value in the AMI field to your new AMI ID.
                 </p>
             </section>
         </div>
