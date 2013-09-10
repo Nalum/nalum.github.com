@@ -87,7 +87,7 @@ pip install virtualenv</code></pre>
                     install. If you are asked to overwrite anything say no.
                 </p>
                 <pre><code>cp -r /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
-cp -r /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/</code></pre>
+cp -r /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/</code></pre>
                 <p>
                     We need to get <code>mod_wsgi</code> to run with 2.7,
                     this means compiling our own version of <code>mod_wsgi</code>
@@ -100,8 +100,8 @@ cp -r /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/</code
                     of <code>mod_wsgi</code> that runs against 2.7.
                 </p>
                 <p>
-                    Now we will download, untar, configure and make install the
-                    new version of <code>mod_wsgi</code> for Python 2.7.
+                    Now we will download, untar, configure and <code>make install</code>
+                    the new version of <code>mod_wsgi</code> for Python 2.7.
                 </p>
                 <pre>cd /opt<code>curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 tar xvzf mod_wsgi-3.4.tar.gz
@@ -113,7 +113,7 @@ make install</code></pre>
                     uses the new configured <code>mod_wsgi.so</code> above and
                     Python 2.7. In my case I am also updating the location of the
                     wsgi static folder. You will also need to remove the compiled
-                    version of the file <code>rm /opt/elasticbeanstalk/hooks/config.pyc</code>.
+                    version of the file<br><code>rm /opt/elasticbeanstalk/hooks/config.pyc</code>.
                 </p>
                 <pre>diff /opt/elasticbeanstalk/hooks/config.py<code>32c32
 &lt; LoadModule wsgi_module modules/mod_wsgi.so
@@ -138,7 +138,7 @@ virtualenv venv</code></pre>
                 <p>
                     Now we want to deploy a version of our app. You can do this
                     by uploading a ZIP file through the AWS EB Console or if you
-                    have the EB CLI Tool install you can use the git command
+                    have the EB CLI Tool installed you can use the git command
                     <code>git aws.push --environment test-env</code>.
                 </p>
                 <p>
