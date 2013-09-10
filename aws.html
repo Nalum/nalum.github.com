@@ -26,12 +26,12 @@
             <section id="main_content" class="inner">
                 <h2>AWS Elastic Beanstalk and Python 2.7</h2>
                 <p>
-                    I've been looking at AWS Elastic Beanstalk (EB) and trying to
-                    get it up and running. I've found, so far, that I can do so
+                    I&apos;ve been looking at AWS Elastic Beanstalk (EB) and trying to
+                    get it up and running. I&apos;ve found, so far, that I can do so
                     simply enough. Using the <a href="http://aws.amazon.com/cli/" target="_blank">
-                    Python CLI Tool Kit</a> is quite nice, and the documentation
-                    looks like it's starting to take shape. There still seems to
-                    be some issues with it so I wont be using it for the moment.
+                    Python CLI Tool Kit</a> is quite nice and the documentation
+                    looks like it&apos;s starting to take shape. There still seems to
+                    be some issues with it so I won&apos;t be using it for the moment.
                 </p>
                 <p>
                     Using the AWS Console we can setup an EB Application and
@@ -42,15 +42,15 @@
                     though you can update to it using <code>yum update</code>.
                 </p>
                 <p>
-                    So I'm going to run through setting up Python 2.7 as the
+                    So I&apos;m going to run through setting up Python 2.7 as the
                     default instead of Python 2.6. I have successfully done this
                     using the method below.
                 </p>
                 <p>
                     To start with, you want to create a new instance of
-                    <code>ami-c37474b7</code>, I've been told that you need to do
+                    <code>ami-c37474b7</code>, I&apos;ve been told that you need to do
                     this through the EC2 interface rather than the EB interface
-                    but I've found that if you do it that way you don't get all
+                    but I&apos;ve found that if you do it that way you don&apos;t get all
                     the software needed on the system to get it up and running as
                     an EB instance.
                 </p>
@@ -92,7 +92,7 @@ cp -r /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/</
                 <p>
                     We need to get <code>mod_wsgi</code> to run with 2.7,
                     this means compiling our own version of <code>mod_wsgi</code>
-                    to run against 2.7 instead of 2.6. This shouldn't be too dificult.
+                    to run against 2.7 instead of 2.6. This shouldn&apos;t be too dificult.
                 </p>
                 <p>
                     Along with <code>python2.7</code> we installed <code>gcc</code>,
@@ -113,7 +113,7 @@ make install</code></pre>
                     Next we want to update the <code>wsgi.conf</code> file so it
                     uses the new configured <code>mod_wsgi.so</code> above and
                     Python 2.7. In my case I am also updating the location of the
-                    wsgi static folder. But you'll need to update the template
+                    wsgi static folder. You&apos;ll need to update the template
                     for the file as it will be over written with changes to the
                     environment. The template is in <code>/opt/elasticbeanstalk/hooks/config.py</code>.
                     You will also need to remove the compiled version of the file
@@ -128,11 +128,11 @@ make install</code></pre>
 ---
 &gt;   python-path=%s:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \
 140,141c140,141
-&lt;         contents.append('Alias %s %s' % (key, os.path.join(APP_DIR, value)))
-&lt;         contents.append('&lt;Directory %s&gt;' % os.path.join(APP_DIR, value))
+&lt;         contents.append(&apos;Alias %s %s&apos; % (key, os.path.join(APP_DIR, value)))
+&lt;         contents.append(&apos;&lt;Directory %s&gt;&apos; % os.path.join(APP_DIR, value))
 ---
-&gt;         contents.append('Alias %s %sstatic' % (key, os.path.join(APP_DIR, value)))
-&gt;         contents.append('&lt;Directory %sstatic&gt;' % os.path.join(APP_DIR, value))</code></pre>
+&gt;         contents.append(&apos;Alias %s %sstatic&apos; % (key, os.path.join(APP_DIR, value)))
+&gt;         contents.append(&apos;&lt;Directory %sstatic&gt;&apos; % os.path.join(APP_DIR, value))</code></pre>
                 <p>
                     With that done we want to update the python virtual environments
                     to use Python 2.7.
@@ -147,12 +147,12 @@ virtualenv venv</code></pre>
                     <code>git aws.push --environment test-env</code>.
                 </p>
                 <p>
-                    And that's it, you now have Elastic Beanstalk setup with
-                    Amazon Linux AMI with Python 2.7 setup as the system default.
+                    And that&apos;s it, you now have Elastic Beanstalk setup with
+                    Amazon Linux AMI with Python 2.7 set as the system default.
                     At this point you should make your own AMI. Very easy to do
                     from the AWS EC2 Console. When you have made your own AMI
                     go to the configuration of your Application Environment
-                    and change the value in the AMI field to your new AMI ID.
+                    and change the value of the AMI field to your new AMI ID.
                 </p>
             </section>
         </div>
