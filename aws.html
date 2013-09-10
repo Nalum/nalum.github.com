@@ -119,24 +119,26 @@ cd mod_wsgi-3.4
 ./configure --with-python=/usr/bin/python # Note: Use python2.7 if you didn't run the symlink commands above.
 make install</code></pre>
                 <p>
-                    Next we want to update the <code>wsgi.conf</code> file so it uses the new
-                    configured <code>mod_wsgi.so</code> above and Python 2.7. In my case I am
-                    also updating the location of the wsgi static folder.
+                    Next we want to update the <code>wsgi.conf</code> file so it
+                    uses the new configured <code>mod_wsgi.so</code> above and
+                    Python 2.7. In my case I am also updating the location of the
+                    wsgi static folder. You will also need to remove the compiled
+                    version of the file <code>rm /opt/elasticbeanstalk/hooks/config.pyc</code>.
                 </p>
-                <pre>diff /etc/httpd/conf.d/wsgi.conf<code>2c2
+                <pre>diff /opt/elasticbeanstalk/hooks/config.py<code>32c32
 &lt; LoadModule wsgi_module modules/mod_wsgi.so
 ---
-&gt; LoadModule wsgi_module "/opt/mod_wsgi-3.4/.libs/mod_wsgi.so"
-9,10c9,10
-&lt; Alias /static /opt/python/current/app/
-&lt; &lt;Directory /opt/python/current/app/&gt;
+&gt; LoadModule wsgi_module /opt/mod_wsgi-3.4/.libs/mod_wsgi.so
+50c50
+&lt;   python-path=%s:/opt/python/run/venv/lib/python2.6/site-packages user=wsgi group=wsgi \
 ---
-&gt; Alias /static /opt/python/current/app/static
-&gt; &lt;Directory /opt/python/current/app/static&gt;
-25c25
-&lt;   python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.6/site-packages user=wsgi group=wsgi \
+&gt;   python-path=%s:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \
+140,141c140,141
+&lt;         contents.append('Alias %s %s' % (key, os.path.join(APP_DIR, value)))
+&lt;         contents.append('&lt;Directory %s&gt;' % os.path.join(APP_DIR, value))
 ---
-&gt;   python-path=/opt/python/current/app:/opt/python/run/venv/lib/python2.7/site-packages user=wsgi group=wsgi \</code></pre>
+&gt;         contents.append('Alias %s %sstatic' % (key, os.path.join(APP_DIR, value)))
+&gt;         contents.append('&lt;Directory %sstatic&gt;' % os.path.join(APP_DIR, value))</code></pre>
                 <p>
                     With that done <code>mod_wsgi.so</code> is going to look for
                     the python packages in <code>/opt/python/run/venv/lib/python2.7</code>
