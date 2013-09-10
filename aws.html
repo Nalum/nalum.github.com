@@ -61,23 +61,35 @@
                     commands.
                 </p>
                 <pre>cd /home/ec2-user<code>yum update
-yum install gcc python27 python27-devel httpd-devel make
-cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
-cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
-rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2</code></pre>
+yum install gcc python27 python27-devel httpd-devel make</code></pre>
                 <p>
-                    These next set of commands make Python 2.7 the default and are
-                    what the <code>yum update</code> undid. So it is up to you if you want to
-                    do this part or not.
+                    These next set of commands make Python 2.7 the default.
                 </p>
-                <pre>cd /usr/bin<code>ln -s python2.7 python
+                <pre>cd /usr/bin<code>rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2
+ln -s python2.7 python
 ln -s python2.7 python2
 ln -s pydoc27 pydoc
 ln -s pydoc27 pydoc2
 ln -s python2.7-config python-config
 ln -s python2.7-config python-config2</code></pre>
                 <p>
-                    So we need to get <code>mod_wsgi</code> to run with 2.7,
+                    Now we want to update <code>easy_install</code> to the latest
+                    version, install <code>pip</code> and install <code>virtualenv</code>
+                    via <code>pip</code>.
+                </p>
+                <pre>cd /opt<code>wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O - | python
+easy_install pip
+pip install virtualenv</code></pre>
+                <p>
+                    There are still some things that are missing from our Python
+                    2.7 install that are required for <code>yum</code> and the
+                    aws tools. So we are going to copy those from the Python 2.6
+                    install. If you are asked to overwrite anything say no.
+                </p>
+                <pre><code>cp -r /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
+cp -r /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/</code></pre>
+                <p>
+                    We need to get <code>mod_wsgi</code> to run with 2.7,
                     this means compiling our own version of <code>mod_wsgi</code>
                     to run against 2.7 instead of 2.6. This shouldn't be too dificult.
                 </p>
@@ -121,10 +133,8 @@ make install</code></pre>
                     With that done we want to update the python virtual environments
                     to use Python 2.7.
                 </p>
-                <pre>cd /opt/python/run<code>rm ./baselinenv/bin/python
-virtualenv --no-site-packages -p python2.7 baselinenv
-rm ./venv/bin/python
-virtualenv --no-site-packages -p python2.7 venv</code></pre>
+                <pre>cd /opt/python/run<code>virtualenv baselinenv
+virtualenv venv</code></pre>
                 <p>
                     Now we want to deploy a version of our app. You can do this
                     by uploading a ZIP file through the AWS EB Console or if you
@@ -132,10 +142,9 @@ virtualenv --no-site-packages -p python2.7 venv</code></pre>
                     <code>git aws.push --environment test-env</code>.
                 </p>
                 <p>
-                    And finally, for good measure, restart the <code>httpd</code>
-                    server and hopefully you wont get any errors.
+                    And that's it, you now have Elastic Beanstalk setup with
+                    Amazon Linux AMI Python 2.7.
                 </p>
-                <pre><code>httpd -k restart</code></pre>
             </section>
         </div>
         <!-- FOOTER  -->
