@@ -51,13 +51,11 @@
                 </p>
                 <p>
                     So to start with, you want to create a new instance of
-                    <code>ami-c37474b7</code><!--  and you want to do this through
-                    the EC2 interface and not the EB interface as we will be
-                    creating our own AMI based on the changes that we make. -->
-                    I've been told that you need to do this through the EC2
-                    interface rather than the EB interface but I've found that
-                    if you do it that way you don't get all the software needed
-                    on the system to get it up and running as EB instance.
+                    <code>ami-c37474b7</code> I've been told that you need to do
+                    this through the EC2 interface rather than the EB interface
+                    but I've found that if you do it that way you don't get all
+                    the software needed on the system to get it up and running as
+                    an EB instance.
                 </p>
                 <p>
                     So create your application and create a temporary environment.
@@ -65,46 +63,12 @@
                     into it. Once you have ssh'd in run the following set of
                     commands.
                 </p>
-                <!-- <p>
-                    When I did this first, I ran the update after completing
-                    the steps which then undid part of it. So I've moved the
-                    update to the first thing to be done. Note: All commands
-                    should be run as the root user.
-                </p> -->
                 <pre>cd /home/ec2-user<code>yum update
-yum install gcc python27 python27-devel httpd-devel make
-cp -r -f /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
-cp -r -f /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/
-rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2</code></pre>
-                <!-- <p>
-                    These next set of commands make Python 2.7 the default and are
-                    what the <code>yum update</code> undid. So it is up to you if you want to
-                    do this part or not.
-                </p> -->
-                <pre>cd /usr/bin<code>ln -s python2.7 python
-ln -s python2.7 python2
-ln -s pydoc27 pydoc
-ln -s pydoc27 pydoc2
-ln -s python2.7-config python-config
-ln -s python2.7-config python-config2</code></pre>
+yum install gcc python27 python27-devel httpd-devel make</code></pre>
                 <p>
-                    Once that is done we then update the <code>easy_install</code>
-                    command so that it will use Python 2.7
-                </p>
-                <pre>diff /usr/bin/easy_install<code>1c1
-&lt; #!/usr/bin/python2.6
----
-&gt; #!/usr/bin/python</code></pre>
-                <p>
-                    With the above change done we can now install <code>pip</code>.
-                </p>
-                <pre>cd /usr/bin<code>easy_install pip</code></pre>
-                <p>
-                    If you try running <code>python -V</code> directly now you will
-                    be running 2.7 but if you try running a wsgi application you
-                    will be running 2.6 still. So we need to get <code>mod_wsgi</code>
-                    to run with 2.7, this means compiling our own version of
-                    <code>mod_wsgi</code> to run against 2.7 instead of 2.6.
+                    So we need to get <code>mod_wsgi</code> to run with 2.7,
+                    this means compiling our own version of <code>mod_wsgi</code>
+                    to run against 2.7 instead of 2.6.
                 </p>
                 <p>
                     This shouldn't be too dificult. At the beginning of this we
@@ -116,7 +80,7 @@ ln -s python2.7-config python-config2</code></pre>
                 <pre>cd /opt<code>curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 tar xvzf mod_wsgi-3.4.tar.gz
 cd mod_wsgi-3.4
-./configure --with-python=/usr/bin/python # Note: Use python2.7 if you didn't run the symlink commands above.
+./configure --with-python=/usr/bin/python2.7
 make install</code></pre>
                 <p>
                     Next we want to update the <code>wsgi.conf</code> file so it
@@ -140,65 +104,12 @@ make install</code></pre>
 &gt;         contents.append('Alias %s %sstatic' % (key, os.path.join(APP_DIR, value)))
 &gt;         contents.append('&lt;Directory %sstatic&gt;' % os.path.join(APP_DIR, value))</code></pre>
                 <p>
-                    With that done <code>mod_wsgi.so</code> is going to look for
-                    the python packages in <code>/opt/python/run/venv/lib/python2.7</code>
-                    so we need to create this folder, but we are going to do
-                    that in <code>/opt/python/run/baselinenv</code>. We also need
-                    to apply the following patch to <code>/opt/python/run/baselinenv/bin/easy_install</code>
-                    and <code>/opt/python/run/baselinenv/bin/pip</code> and create
-                    a new symlink to <code>/usr/bin/python</code>.
+                    With that done .
                 </p>
-                <pre>cd /opt/python/run/baselinenv/bin<code>rm ./python
-ln -s /usr/bin/python</code></pre>
-                <pre>diff /opt/python/run/baselinenv/bin/easy_install<code>1c1
-&lt; #!/usr/bin/python2.6
----
-&gt; #!/usr/bin/python</code></pre>
-                <pre>diff /opt/python/run/baselinenv/bin/pip<code>1c1
-&lt; #!/usr/bin/python2.6
----
-&gt; #!/usr/bin/python</code></pre>
-                <p>
-                    Now we need to install the <code>weakrefset</code> module,
-                    create symlinks and copy certain files from the Python 2.6
-                    lib folder. This should give us a working Python 2.7 setup.
-                </p>
-                <pre>cd /opt/python/run/baselinenv/lib<code>pip install weakrefset</code></pre>
-                <pre><code>mkdir python2.7
-cd ./python2.7
-mkdir distutils
-cp ../python2.6/distutils/* ./distutils
-cp ../python2.6/no-global-site-packages.txt ./
-cp ../python2.6/orig-prefix.txt ./
-mkdir site-packages
-cp -r ../python2.6/site-packages/* ./site-packages
-rm -rf ./site-packages/pip-*
-cp -r /usr/lib/python2.7/site-packages/pip-1.4.1-py2.7.egg ./site-packages
-cp ../python2.6/site.py ./</code></pre>
-                <pre><code>ln -s /usr/lib64/python2.7/_abcoll.py
-ln -s /usr/lib64/python2.7/abc.py
-ln -s /usr/lib64/python2.7/codecs.py
-ln -s /usr/lib64/python2.7/config
-ln -s /usr/lib64/python2.7/copy_reg.py
-ln -s /usr/lib64/python2.7/encodings
-ln -s /usr/lib64/python2.7/fnmatch.py
-ln -s /usr/lib64/python2.7/genericpath.py
-ln -s /usr/lib64/python2.7/lib-dynload
-ln -s /usr/lib64/python2.7/linecache.py
-ln -s /usr/lib64/python2.7/locale.py
-ln -s /usr/lib64/python2.7/ntpath.py
-ln -s /usr/lib64/python2.7/os.py
-ln -s /usr/lib64/python2.7/posixpath.py
-ln -s /usr/lib64/python2.7/re.py
-ln -s /usr/lib64/python2.7/sre_compile.py
-ln -s /usr/lib64/python2.7/sre_constants.py
-ln -s /usr/lib64/python2.7/sre_parse.py
-ln -s /usr/lib64/python2.7/sre.py
-ln -s /usr/lib64/python2.7/stat.py
-ln -s /usr/lib64/python2.7/types.py
-ln -s /usr/lib64/python2.7/UserDict.py
-ln -s /usr/lib64/python2.7/warnings.py
-ln -s /usr/lib64/python2.7/_weakrefset.py</code></pre>
+                <pre>cd /opt/python/run<code>rm ./baselinenv/bin/python
+virtualenv --no-site-packages -p python2.7 baselinenv
+rm ./venv/bin/python
+virtualenv --no-site-packages -p python2.7 venv</code></pre>
                 <p>
                     Now we want to deploy a version of our app.
                 </p>
