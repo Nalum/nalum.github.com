@@ -25,6 +25,7 @@
         <div id="main_content_wrap" class="outer">
             <section id="main_content" class="inner">
                 <h2>AWS Elastic Beanstalk and Python 2.7</h2>
+                <p class="date">11th September 2013</p>
                 <p>
                     I&apos;ve been looking at AWS Elastic Beanstalk (EB) and trying to
                     get it up and running. I&apos;ve found, so far, that I can do so
@@ -60,13 +61,13 @@
                     into it. Once you have, run the following set of commands.
                     <strong>Note:</strong> All commands run as the root user.
                 </p>
-                <pre>cd /home/ec2-user<code>yum update
+                <pre>cd /home/ec2-user<code class="bash">yum update
 yum install gcc python27 python27-devel httpd-devel make</code></pre>
                 <p>
                     The next set of commands make Python 2.7 the default for the
                     system.
                 </p>
-                <pre>cd /usr/bin<code>rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2
+                <pre>cd /usr/bin<code class="bash">rm -f /usr/bin/python /usr/bin/python2 /usr/bin/pydoc /usr/bin/pydoc2 /usr/bin/python-config /usr/bin/python-config2
 ln -s python2.7 python
 ln -s python2.7 python2
 ln -s pydoc27 pydoc
@@ -78,7 +79,7 @@ ln -s python2.7-config python-config2</code></pre>
                     version, install <code>pip</code> and install <code>virtualenv</code>
                     via <code>pip</code>.
                 </p>
-                <pre>cd /opt<code>wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O - | python
+                <pre>cd /opt<code class="bash">wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O - | python
 easy_install pip
 pip install virtualenv</code></pre>
                 <p>
@@ -87,7 +88,7 @@ pip install virtualenv</code></pre>
                     aws tools. So we are going to copy those from the Python 2.6
                     install. If you are asked to overwrite anything say no.
                 </p>
-                <pre><code>cp -r /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
+                <pre><code class="bash">cp -r /usr/lib/python2.6/site-packages/* /usr/lib/python2.7/site-packages/
 cp -r /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/</code></pre>
                 <p>
                     We need to get <code>mod_wsgi</code> to run with 2.7,
@@ -104,7 +105,7 @@ cp -r /usr/lib64/python2.6/site-packages/* /usr/lib64/python2.7/site-packages/</
                     Now we will download, <code>tar xvzf</code>, <code>configure</code> and <code>make install</code>
                     the new version of <code>mod_wsgi</code> for Python 2.7.
                 </p>
-                <pre>cd /opt<code>curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
+                <pre>cd /opt<code class="bash">curl -o mod_wsgi-3.4.tar.gz https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 tar xvzf mod_wsgi-3.4.tar.gz
 cd mod_wsgi-3.4
 ./configure --with-python=/usr/bin/python2.7
@@ -119,7 +120,7 @@ make install</code></pre>
                     You will also need to remove the compiled version of the file
                     <br><code>rm /opt/elasticbeanstalk/hooks/config.pyc</code>.
                 </p>
-                <pre>diff /opt/elasticbeanstalk/hooks/config.py<code>32c32
+                <pre>diff /opt/elasticbeanstalk/hooks/config.py<code class="diff">32c32
 &lt; LoadModule wsgi_module modules/mod_wsgi.so
 ---
 &gt; LoadModule wsgi_module /opt/mod_wsgi-3.4/.libs/mod_wsgi.so
@@ -137,7 +138,7 @@ make install</code></pre>
                     With that done we want to update the python virtual environments
                     to use Python 2.7.
                 </p>
-                <pre>cd /opt/python/run<code>virtualenv baselinenv
+                <pre>cd /opt/python/run<code class="bash">virtualenv baselinenv
 virtualenv venv</code></pre>
                 <p>
                     Now we can deploy a version of our app. You can do this
