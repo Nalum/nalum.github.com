@@ -267,6 +267,13 @@ p.date {
     font-family: fantasy;
 }
 
+span.date {
+    font-size: 12px;
+    color: #aaa;
+    text-align: right;
+    font-family: fantasy;
+}
+
 /*******************************************************************************
 Full-Width Styles
 *******************************************************************************/
