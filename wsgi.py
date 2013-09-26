@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import sys
 
 sys.path.append('/srv/www/lukemallon.com/public_html')
-
-os.environ['PYTHON_EGG_CACHE'] = '/srv/www/lukemallon.com/.python-egg'
 
 
 def application(environ, start_response):
